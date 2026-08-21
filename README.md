@@ -1,6 +1,6 @@
-# TyrQuake Libretro Core for DataFlyer SF2000 & GB300 (FrogUI)
+# TyrQuake Libretro Core for DataFrog SF2000 & GB300 (FrogUI)
 
-Optimized and customized build of **TyrQuake (Libretro)** specifically tuned for the **DataFlyer SF2000** and **GB300** handheld retro gaming consoles running standard Multicore or **FrogUI**.
+Optimized and customized build of **TyrQuake (Libretro)** specifically tuned for the **DataFrog SF2000** and **GB300** handheld retro gaming consoles running standard Multicore or **FrogUI**.
 
 ---
 
@@ -53,7 +53,7 @@ This core is built using the MIPS toolchain inside the `gb300_multicore` environ
 - `make`, `python3`
 
 ### Build Steps:
-1. Place this `tyrquake` folder inside `gb300_multicore/cores/tyrquake`.
+1. Place this `tyrquake` folder inside `gb300_multicore/cores/tyrquake`. and use https://github.com/Trademarked69/sf2000_multicore as buildsystem.
 2. Run the build command for your target:
    ```bash
    # Build static core library
