@@ -157,8 +157,13 @@ D_SCAlloc(int width, int size)
    while (new_surf->size < size) {
       /* free another */
       sc_rover = sc_rover->next;
-      if (!sc_rover)
-         Sys_Error("%s: hit the end of memory", __func__);
+      if (!sc_rover) {
+         D_FlushCaches();
+         new_surf = sc_base;
+         if (new_surf->size < size)
+            Sys_Error("%s: hit the end of memory", __func__);
+         break;
+      }
       if (sc_rover->owner)
          *sc_rover->owner = NULL;
 

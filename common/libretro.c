@@ -96,6 +96,8 @@ static bool libretro_supports_bitmasks = false;
 
 #if defined(HW_DOL)
 #define DEFAULT_MEMSIZE_MB 8
+#elif defined(SF2000)
+#define DEFAULT_MEMSIZE_MB 16
 #elif defined(WIIU)
 #define DEFAULT_MEMSIZE_MB 32
 #elif defined(HW_RVL) || defined(_XBOX1) 
@@ -899,11 +901,15 @@ static float sanitise_framerate(float target)
  * AUDIO_SAMPLERATE_* notes above). */
 static int framerate_to_samplerate(float fr)
 {
+#ifdef SF2000
+   return AUDIO_SAMPLERATE_22KHZ;
+#else
    if (fr == 40.0f || fr == 72.0f || fr == 119.0f)
       return AUDIO_SAMPLERATE_22KHZ;
    if (fr == 120.0f)
       return AUDIO_SAMPLERATE_48KHZ;
    return AUDIO_SAMPLERATE_DEFAULT;
+#endif
 }
 
 /* Snap a host target rate to the nearest value the option advertises.
@@ -963,9 +969,15 @@ static void update_variables(bool startup)
          {
             float target_framerate = 0.0f;
 
+#if defined(SF2000)
+            if (!environ_cb(RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE,
+                  &target_framerate))
+               target_framerate = 20.0f;
+#else
             if (!environ_cb(RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE,
                   &target_framerate))
                target_framerate = 60.0f;
+#endif
 
             framerate = sanitise_framerate(target_framerate);
          }
@@ -986,8 +998,13 @@ static void update_variables(bool startup)
             framerate = sanitise_framerate((float)atof(var.value));
          }
       }
+#if defined(SF2000)
+      else
+         framerate = 20.0f;
+#else
       else
          framerate = 60.0f;
+#endif
 
       frametime_usec = 1000.0f / framerate;
 
@@ -1112,6 +1129,56 @@ static void update_variables(bool startup)
 		analog_deadzone = (int)(pct * 0.01f * ANALOG_RANGE);
    }
 
+   /* TyrQuake.opt FPS and Graphics Cvar Mappings */
+   var.key = "tyrquake_fastsky";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      Cvar_Set("r_fastsky", (!strcmp(var.value, "enabled") || !strcmp(var.value, "1")) ? "1" : "0");
+
+   var.key = "tyrquake_drawviewmodel";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      Cvar_Set("r_drawviewmodel", (!strcmp(var.value, "disabled") || !strcmp(var.value, "0")) ? "0" : "1");
+
+   var.key = "tyrquake_polyblend";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      Cvar_Set("gl_polyblend", (!strcmp(var.value, "disabled") || !strcmp(var.value, "0")) ? "0" : "1");
+
+   var.key = "tyrquake_contentblend";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      Cvar_Set("v_contentblend", (!strcmp(var.value, "disabled") || !strcmp(var.value, "0")) ? "0" : "1");
+
+   var.key = "tyrquake_dynamic_lighting";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      Cvar_Set("r_dynamic", (!strcmp(var.value, "disabled") || !strcmp(var.value, "0")) ? "0" : "1");
+
+   var.key = "tyrquake_shadows";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      Cvar_Set("r_shadows", (!strcmp(var.value, "enabled") || !strcmp(var.value, "1")) ? "1" : "0");
+
+   var.key = "tyrquake_wateralpha";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      Cvar_Set("r_wateralpha", var.value);
+
+   var.key = "tyrquake_nosound";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      bool disable_snd = (!strcmp(var.value, "enabled") || !strcmp(var.value, "1"));
+      Cvar_Set("s_nosound", disable_snd ? "1" : "0");
+      Cvar_Set("nosound", disable_snd ? "1" : "0");
+   }
+
+   var.key = "tyrquake_showfps";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      Cvar_Set("cl_showfps", (!strcmp(var.value, "enabled") || !strcmp(var.value, "1")) ? "1" : "0");
+
 }
 
 static void update_env_variables(void)
@@ -1150,8 +1217,12 @@ void retro_run(void)
 
    did_flip = false;
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+   static bool first_cvar_sync = true;
+   if (first_cvar_sync || (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated))
+   {
+      first_cvar_sync = false;
       update_variables(false);
+   }
    if (!has_set_username)
    {
       update_env_variables();
@@ -1426,6 +1497,23 @@ bool retro_load_game(const struct retro_game_info *info)
    /* Override some default binds with more modern ones if we are booting the 
     * game for the first time. */
    fill_pathname_join(cfg_file, g_save_dir, "config.cfg", sizeof(cfg_file));
+
+#ifdef SF2000
+   Cvar_Set("r_fastsky", "1");
+   Cvar_Set("r_dynamic", "0");
+   Cvar_Set("r_shadows", "0");
+   Cvar_Set("r_waterwarp", "0");
+   Cvar_Set("d_warp", "0");
+   Cvar_Set("r_wateralpha", "1");
+   Cvar_Set("r_lavaalpha", "1");
+   Cvar_Set("r_slimealpha", "1");
+   Cvar_Set("r_telealpha", "1");
+   Cvar_Set("r_liquidblend", "0");
+   Cvar_Set("r_lerpmodels", "0");
+   Cvar_Set("r_lerpmove", "0");
+   Cvar_Set("r_polysubdiv", "0");
+   Cvar_Set("r_phongshading", "0");
+#endif
 
    if (!path_is_valid(cfg_file))
    {
@@ -1710,8 +1798,8 @@ void VID_Init(unsigned char *palette)
     * defence-of-last-resort in case the frontend hands us
     * a bad value, and also catches any future code path that
     * sets width/height from another untrusted source. */
-   if (width  < 320)         width  = 320;
-   if (height < 200)         height = 200;
+   if (width  < 64)         width  = 64;
+   if (height < 48)         height = 48;
    if (width  > MAXWIDTH)    width  = MAXWIDTH;
    if (height > MAXHEIGHT)   height = MAXHEIGHT;
 
@@ -1732,10 +1820,16 @@ void VID_Init(unsigned char *palette)
    if (finalimage)  { free(finalimage);  finalimage  = NULL; }
    if (surfcache)   { free(surfcache);   surfcache   = NULL; }
 
+   size_t sc_size_alloc = (size_t)D_SurfaceCacheForRes(width, height);
+#ifdef SF2000
+   if (sc_size_alloc < (2 * 1024 * 1024))
+      sc_size_alloc = 2 * 1024 * 1024;
+#endif
+
    vid_buffer = (byte*)malloc(fb_pixels * sizeof(byte));
    zbuffer    = (short*)malloc(fb_pixels * sizeof(short));
    finalimage = (short*)malloc(fb_pixels * sizeof(short));
-   surfcache  = (byte*)malloc(SURFCACHE_SIZE);
+   surfcache  = (byte*)malloc(sc_size_alloc);
 
    if (!vid_buffer || !zbuffer || !finalimage || !surfcache)
       Sys_Error("VID_Init: failed to allocate framebuffer "
@@ -1756,7 +1850,7 @@ void VID_Init(unsigned char *palette)
     vid.aspect = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
 
     d_pzbuffer = zbuffer;
-    D_InitCaches(surfcache, SURFCACHE_SIZE);
+    D_InitCaches(surfcache, (int)sc_size_alloc);
 }
 
 void VID_Shutdown(void)
@@ -1787,56 +1881,42 @@ void VID_Update(vrect_t *rects)
    if (!video_cb || !rects || did_flip)
       return;
 
-   /* When a HW backend is active, the SW pixel buffer
-    * (vid.buffer) is not the source of truth -- the active
-    * backend is rendering through its own command stream
-    * and will call video_cb with RETRO_HW_FRAME_BUFFER_VALID
-    * from its own end_frame.  Palette-converting stale
-    * vid.buffer contents here and pushing them to video_cb
-    * would either fight the HW backend for the video output
-    * (interleaved SW + HW frames) or simply present
-    * unrelated SW frames that the user never asked for.
-    * Bail out of the SW present path and let the HW
-    * backend own the video callback.
-    *
-    * Phase 3b: HW backends do not yet call video_cb either,
-    * so the frontend's frame-dupe path takes over (the
-    * 'if (!did_flip)' check in retro_run does
-    * video_cb(NULL, ...)).  This produces a frozen frame
-    * while Vulkan is active -- expected for the current
-    * phase; Phase 3c lands the actual HW-backed frame
-    * delivery and the frozen behaviour resolves. */
    if (g_rhi && g_rhi->kind != RHI_BACKEND_SOFTWARE)
       return;
 
-   /* Palette-convert our 8bpp framebuffer into the 16bpp finalimage
-    * buffer and hand that to video_cb. We deliberately do NOT use
-    * RETRO_ENVIRONMENT_GET_CURRENT_SOFTWARE_FRAMEBUFFER: the SW path
-    * still wants vid.buffer to be a stable, persistent buffer across
-    * frames -- the libretro frontend's swapchain buffer is not, so
-    * direct-rendering into it produced visible cross-buffer artifacts
-    * (e.g. a doubled status bar from previous-frame content showing
-    * through unwritten regions).  The vid.numpages-gated partial-
-    * update optimizations the original code relied on (sb_updates,
-    * scr_fullupdate, clearnotify, etc.) are now bypassed at
-    * retro_load_game (Phase 4m sets vid.numpages to 0x40000000),
-    * because they assume page-flip redundancy that libretro's
-    * single-buffered model never provides -- and that assumption
-    * also breaks the moment R_RenderView's 3D viewport extends
-    * into the status-bar area at high scr_viewsize, overwriting
-    * the inventory icons between Sbar_Draw runs.  The right way
-    * to claim the sw_fb speedup is to convert the renderer to
-    * write 16bpp natively; until then, this single post-pass is
-    * correct. */
    pitch    = width;
    ptr      = (uint16_t*)finalimage;
    olineptr = ptr;
 
-   for (y = 0; y < rects->height; ++y)
+   if (rects->width == width && rects->height == height && rects->x == 0 && rects->y == 0 &&
+       (((uintptr_t)ptr & 3) == 0) && (((uintptr_t)ilineptr & 3) == 0))
    {
-      for (x = 0; x < rects->width; ++x)
-         *olineptr++ = pal[*ilineptr++];
-      olineptr += pitch - rects->width;
+      size_t count4 = ((size_t)width * height) >> 2;
+      uint32_t *out32 = (uint32_t *)ptr;
+      while (count4--)
+      {
+         uint8_t p0 = ilineptr[0];
+         uint8_t p1 = ilineptr[1];
+         uint8_t p2 = ilineptr[2];
+         uint8_t p3 = ilineptr[3];
+         ilineptr += 4;
+#ifdef MSB_FIRST
+         *out32++ = ((uint32_t)pal[p0] << 16) | (uint32_t)pal[p1];
+         *out32++ = ((uint32_t)pal[p2] << 16) | (uint32_t)pal[p3];
+#else
+         *out32++ = (uint32_t)pal[p0] | ((uint32_t)pal[p1] << 16);
+         *out32++ = (uint32_t)pal[p2] | ((uint32_t)pal[p3] << 16);
+#endif
+      }
+   }
+   else
+   {
+      for (y = 0; y < rects->height; ++y)
+      {
+         for (x = 0; x < rects->width; ++x)
+            *olineptr++ = pal[*ilineptr++];
+         olineptr += pitch - rects->width;
+      }
    }
 
    video_cb(ptr, width, height, pitch << 1);

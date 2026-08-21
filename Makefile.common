@@ -31,7 +31,7 @@ endif
 
 SOURCES_C :=  \
 	$(CORE_DIR)/common/cl_input.c \
-	$(CORE_DIR)/common/cd_common.c \
+	$(CORE_DIR)/common/cd_stub.c \
 	$(CORE_DIR)/common/alias_model.c \
 	$(CORE_DIR)/common/chase.c \
 	$(CORE_DIR)/common/cl_demo.c \
@@ -93,14 +93,10 @@ SOURCES_C :=  \
 	$(CORE_DIR)/common/perf_timing.c \
 	$(CORE_DIR)/common/bgmusic.c \
 	$(CORE_DIR)/common/snd_codec.c \
-	$(CORE_DIR)/common/snd_flac.c \
 	$(CORE_DIR)/common/snd_mikmod.c \
 	$(CORE_DIR)/common/snd_modplug.c \
-	$(CORE_DIR)/common/snd_mp3.c \
-	$(CORE_DIR)/common/snd_mpg123.c \
 	$(CORE_DIR)/common/snd_opus.c \
 	$(CORE_DIR)/common/snd_umx.c \
-	$(CORE_DIR)/common/snd_vorbis.c \
 	$(CORE_DIR)/common/snd_wave.c \
 	$(CORE_DIR)/common/snd_dma.c \
 	$(CORE_DIR)/common/snd_mem.c \

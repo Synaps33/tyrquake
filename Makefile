@@ -220,7 +220,25 @@ else ifeq ($(platform), ctr)
 	CFLAGS += -I$(DEVKITPRO)/libctru/include
 	STATIC_LINKING = 1
 
-# GCW0
+# SF2000 / GB300
+else ifeq ($(platform), sf2000)
+	TARGET := $(TARGET_NAME)_libretro_$(platform).a
+	MIPS ?= /opt/mips32-mti-elf/2019.09-03-2/bin/mips-mti-elf-
+	CC = $(MIPS)gcc
+	AR = $(MIPS)ar
+	CFLAGS += -EL -march=mips32 -mtune=mips32 -msoft-float -G0 -mno-abicalls -fno-pic
+	CFLAGS += -O3 -ffast-math -fsingle-precision-constant -fno-math-errno -fno-trapping-math -fomit-frame-pointer -finline-functions -funroll-loops -fno-strict-aliasing -ffunction-sections -fdata-sections
+	CFLAGS += -DSF2000 -DNO_THREADS
+	HAVE_NETWORKING = 0
+	USE_CODEC_WAVE = 1
+	USE_CODEC_FLAC = 0
+	USE_CODEC_VORBIS = 0
+	USE_CODEC_MP3 = 0
+	USE_CODEC_OPUS = 0
+	USE_CODEC_MIKMOD = 0
+	USE_CODEC_MODPLUG = 0
+	STATIC_LINKING = 1
+
 else ifeq ($(platform), gcw0)
         TARGET := $(TARGET_NAME)_libretro.so
         CC = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
