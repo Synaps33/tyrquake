@@ -84,6 +84,7 @@ extern cvar_t r_drawentities;
 extern cvar_t r_ambient;
 extern cvar_t r_numsurfs;
 extern cvar_t r_numedges;
+extern cvar_t r_farclip;
 
 #define XCENTERING	(1.0 / 2.0)
 #define YCENTERING	(1.0 / 2.0)

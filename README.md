@@ -37,7 +37,12 @@ Running 3D software rendering on this platform requires extreme optimizations. T
      - `r_waterwarp 0` / `d_warp 0` (disables heavy trigonometric underwater screen warping)
      - `r_wateralpha 1.0` (opaque water, avoids 2-pass translucent liquid rendering)
 
-6. **Stripped Bloat:**
+6. **Configurable 3D Render Distance (`r_farclip` / `tyrquake_render_distance`):**
+   - Implemented view distance clipping across the entire renderer (World BSP trees, submodels, alias monster/item models, sprites, particles, and dynamic lights).
+   - Configurable in core options: `512` (Very close / Maximum FPS), `768`, `1024` (Balanced default for SF2000), `1536`, `2048`, or `Unlimited`.
+   - Greatly boosts frame rates in large open outdoor levels by avoiding edge/vertex processing on distant geometry.
+
+7. **Stripped Bloat:**
    - Removed unneeded external audio decoders (MP3/FLAC/Ogg/MikMod) and CD audio emulation (replaced with lightweight stubs).
    - Removed unused networking drivers while preserving the internal loopback driver for singleplayer.
 

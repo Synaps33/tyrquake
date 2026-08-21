@@ -1160,6 +1160,16 @@ static void update_variables(bool startup)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
       Cvar_Set("r_shadows", (!strcmp(var.value, "enabled") || !strcmp(var.value, "1")) ? "1" : "0");
 
+   var.key = "tyrquake_render_distance";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (!strcmp(var.value, "unlimited") || !strcmp(var.value, "0"))
+         Cvar_Set("r_farclip", "0");
+      else
+         Cvar_Set("r_farclip", var.value);
+   }
+
    var.key = "tyrquake_wateralpha";
    var.value = NULL;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1513,6 +1523,7 @@ bool retro_load_game(const struct retro_game_info *info)
    Cvar_Set("r_lerpmove", "0");
    Cvar_Set("r_polysubdiv", "0");
    Cvar_Set("r_phongshading", "0");
+   Cvar_Set("r_farclip", "1024");
 #endif
 
    if (!path_is_valid(cfg_file))

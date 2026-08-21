@@ -154,7 +154,9 @@ struct retro_core_option_definition option_defs_us[] = {
          { "600",  "600 fps" },
          { NULL, NULL },
       },
-#if defined(_3DS)
+#if defined(SF2000)
+      "20"
+#elif defined(_3DS)
       "25"
 #elif defined(_MIYOO)
       "15"
@@ -215,6 +217,125 @@ struct retro_core_option_definition option_defs_us[] = {
          { NULL, NULL },
       },
       "15"
+   },
+   {
+      "tyrquake_fastsky",
+      "Fast Sky (r_fastsky)",
+      "Draw flat fast sky for big FPS boost.",
+      {
+         { "disabled", "Disabled" },
+         { "enabled",  "Enabled" },
+         { NULL, NULL },
+      },
+      "disabled"
+   },
+   {
+      "tyrquake_drawviewmodel",
+      "Draw Weapon Model (r_drawviewmodel)",
+      "Draw player weapon model on screen.",
+      {
+         { "enabled",  "Enabled" },
+         { "disabled", "Disabled" },
+         { NULL, NULL },
+      },
+      "enabled"
+   },
+   {
+      "tyrquake_polyblend",
+      "Damage Flash (gl_polyblend)",
+      "Red screen flash when taking damage.",
+      {
+         { "enabled",  "Enabled" },
+         { "disabled", "Disabled" },
+         { NULL, NULL },
+      },
+      "enabled"
+   },
+   {
+      "tyrquake_contentblend",
+      "Water/Lava Tint (v_contentblend)",
+      "Screen color blend under water or lava.",
+      {
+         { "enabled",  "Enabled" },
+         { "disabled", "Disabled" },
+         { NULL, NULL },
+      },
+      "enabled"
+   },
+   {
+      "tyrquake_dynamic_lighting",
+      "Dynamic Lighting (r_dynamic)",
+      "Dynamic lights from explosions and flashes.",
+      {
+         { "enabled",  "Enabled" },
+         { "disabled", "Disabled" },
+         { NULL, NULL },
+      },
+      "enabled"
+   },
+   {
+      "tyrquake_shadows",
+      "Entity Shadows (r_shadows)",
+      "Shadows under entities and monsters.",
+      {
+         { "disabled", "Disabled" },
+         { "enabled",  "Enabled" },
+         { NULL, NULL },
+      },
+      "disabled"
+   },
+   {
+      "tyrquake_render_distance",
+      "Render Distance (r_farclip)",
+      "Set maximum 3D rendering distance. Lower values dramatically improve performance on slow CPUs.",
+      {
+         { "unlimited", "Unlimited (Default)" },
+         { "512",       "512 (Very Close - Max FPS)" },
+         { "768",       "768 (Close - High FPS)" },
+         { "1024",      "1024 (Medium - Balanced)" },
+         { "1536",      "1536 (Far)" },
+         { "2048",      "2048 (Very Far)" },
+         { NULL, NULL },
+      },
+#ifdef SF2000
+      "1024"
+#else
+      "unlimited"
+#endif
+   },
+   {
+      "tyrquake_wateralpha",
+      "Water Transparency (r_wateralpha)",
+      "Water opacity.",
+      {
+         { "1.0", "Opaque (1.0)" },
+         { "0.5", "Semi-Transparent (0.5)" },
+         { "0.0", "Fully Transparent (0.0)" },
+         { NULL, NULL },
+      },
+      "1.0"
+   },
+   {
+      "tyrquake_nosound",
+      "Disable Sound Output (s_nosound)",
+      "Disable audio for maximum FPS.",
+      {
+         { "disabled", "Disabled" },
+         { "enabled",  "Enabled" },
+         { NULL, NULL },
+      },
+      "disabled"
+   },
+   {
+      "tyrquake_showfps",
+      "Show FPS Counter (cl_showfps)",
+      "Display FPS on screen.",
+      {
+         { "disabled", "Disabled" },
+         { "enabled",  "Enabled" },
+         { NULL, NULL },
+      },
+      "disabled"
    },
    { NULL, NULL, NULL, {{0}}, NULL },
 };

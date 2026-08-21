@@ -391,16 +391,15 @@ vec_t Length(vec3_t v)
 
 float VectorNormalize(vec3_t v)
 {
-   float length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-   length = sqrtf(length);
+   float length_sq = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+   if (length_sq == 0.0f)
+      return 0.0f;
 
-   if (length)
-   {
-      float ilength = 1.0f / length;
-      v[0] *= ilength;
-      v[1] *= ilength;
-      v[2] *= ilength;
-   }
+   float length = sqrtf(length_sq);
+   float ilength = 1.0f / length;
+   v[0] *= ilength;
+   v[1] *= ilength;
+   v[2] *= ilength;
 
    return length;
 }

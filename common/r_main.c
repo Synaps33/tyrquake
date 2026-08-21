@@ -173,6 +173,7 @@ cvar_t r_drawviewmodel = { "r_drawviewmodel", "1" };
 cvar_t r_ambient = { "r_ambient", "0" };
 cvar_t r_numsurfs = { "r_numsurfs", "0" };
 cvar_t r_numedges = { "r_numedges", "0" };
+cvar_t r_farclip  = { "r_farclip",  "0", true };
 
 cvar_t r_lockpvs = { "r_lockpvs", "0" };
 cvar_t r_lockfrustum = { "r_lockfrustum", "0" };
@@ -322,6 +323,7 @@ R_Init(void)
     Cvar_RegisterVariable(&r_ambient);
     Cvar_RegisterVariable(&r_numsurfs);
     Cvar_RegisterVariable(&r_numedges);
+    Cvar_RegisterVariable(&r_farclip);
     Cvar_RegisterVariable(&r_lerpmodels);
     Cvar_RegisterVariable(&r_lerpmove);
     Cvar_RegisterVariable(&r_lockpvs);
@@ -857,6 +859,27 @@ R_MarkSurfaces(void)
 
 /*
 =============
+BoxMinDistanceSq
+=============
+*/
+static float BoxMinDistanceSq(const vec3_t mins, const vec3_t maxs, const vec3_t point)
+{
+    float dist_sq = 0.0f;
+    int k;
+    for (k = 0; k < 3; k++) {
+        if (point[k] < mins[k]) {
+            float d = mins[k] - point[k];
+            dist_sq += d * d;
+        } else if (point[k] > maxs[k]) {
+            float d = point[k] - maxs[k];
+            dist_sq += d * d;
+        }
+    }
+    return dist_sq;
+}
+
+/*
+=============
 R_CullSurfaces
 =============
 */
@@ -869,6 +892,8 @@ R_CullSurfaces(model_t *model, vec3_t vieworg)
     msurface_t *surf;
     mplane_t *plane;
     vec_t dist;
+    float max_dist_sq = r_farclip.value * r_farclip.value;
+    qboolean use_farclip = (r_farclip.value > 0.0f);
 
     node = model->nodes;
     node->clipflags = 15;
@@ -876,6 +901,11 @@ R_CullSurfaces(model_t *model, vec3_t vieworg)
     for (;;) {
 	if (node->visframe != r_visframecount)
 	    goto NodeUp;
+
+	if (use_farclip && BoxMinDistanceSq(node->mins, node->maxs, vieworg) > max_dist_sq) {
+	    node->clipflags = BMODEL_FULLY_CLIPPED;
+	    goto NodeUp;
+	}
 
 	if (node->clipflags) {
 	    /* Clip the node against the frustum */
@@ -898,6 +928,11 @@ R_CullSurfaces(model_t *model, vec3_t vieworg)
 
 	surf = model->surfaces + node->firstsurface;
 	for (i = 0; i < node->numsurfaces; i++, surf++) {
+	    if (use_farclip && BoxMinDistanceSq(surf->mins, surf->maxs, vieworg) > max_dist_sq) {
+		surf->clipflags = BMODEL_FULLY_CLIPPED;
+		continue;
+	    }
+
 	    /* Clip the surfaces against the frustum */
 	    surf->clipflags = node->clipflags;
 	    for (j = 0; j < 4; j++) {
@@ -982,9 +1017,16 @@ R_CullSubmodelSurfaces(const model_t *submodel, const vec3_t vieworg,
     msurface_t *surf;
     mplane_t *plane;
     vec_t dist;
+    float max_dist_sq = r_farclip.value * r_farclip.value;
+    qboolean use_farclip = (r_farclip.value > 0.0f);
 
     surf = submodel->surfaces + submodel->firstmodelsurface;
     for (i = 0; i < submodel->nummodelsurfaces; i++, surf++) {
+	if (use_farclip && BoxMinDistanceSq(surf->mins, surf->maxs, vieworg) > max_dist_sq) {
+	    surf->clipflags = BMODEL_FULLY_CLIPPED;
+	    continue;
+	}
+
 	/* Clip the surface against the frustum */
 	surf->clipflags = clipflags;
 	for (j = 0; j < 4; j++) {
@@ -1048,6 +1090,8 @@ R_DrawEntitiesOnList(void)
 	case mod_sprite:
 	    VectorCopy(e->origin, r_entorigin);
 	    VectorSubtract(r_origin, r_entorigin, modelorg);
+	    if (r_farclip.value > 0.0f && DotProduct(modelorg, modelorg) > (r_farclip.value * r_farclip.value))
+		break;
 	    R_DrawSprite(e);
 	    break;
 
@@ -1073,6 +1117,8 @@ R_DrawEntitiesOnList(void)
 		VectorCopy(e->origin, r_entorigin);
 	    }
 	    VectorSubtract(r_origin, r_entorigin, modelorg);
+	    if (r_farclip.value > 0.0f && DotProduct(modelorg, modelorg) > (r_farclip.value * r_farclip.value))
+		break;
 
 	    /* see if the bounding box lets us trivially reject, also sets */
 	    /* trivial accept status */

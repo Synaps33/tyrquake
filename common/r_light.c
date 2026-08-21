@@ -125,6 +125,16 @@ void R_PushDlights(mnode_t *headnode) /* qbism- from MH tute - increased dlights
        if (l->die <= 0 || (l->radius <= 0))
           continue;
 
+       if (r_farclip.value > 0.0f)
+       {
+          vec3_t delta;
+          float max_reach;
+          VectorSubtract(l->origin, r_origin, delta);
+          max_reach = r_farclip.value + l->radius;
+          if (DotProduct(delta, delta) > (max_reach * max_reach))
+             continue;
+       }
+
        R_MarkLights(l, i, headnode);
     }
 }

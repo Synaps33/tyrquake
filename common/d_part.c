@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /* d_part.c: software driver module for drawing particles */
 
 #include "quakedef.h"
+#include "r_local.h"
 #include "d_local.h"
 
 
@@ -66,6 +67,9 @@ void D_DrawParticle(particle_t *pparticle)
    transformed[2] = DotProduct(local, r_ppn);
 
    if (transformed[2] < PARTICLE_Z_CLIP)
+      return;
+
+   if (r_farclip.value > 0.0f && transformed[2] > r_farclip.value)
       return;
 
    /* project the point
