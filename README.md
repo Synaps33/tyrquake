@@ -6,7 +6,7 @@ Optimized and customized build of **TyrQuake (Libretro)** specifically tuned for
 
 ## 🎮 Overview
 
-The DataFlyer SF2000 and GB300 are ultra-budget handhelds powered by an Actions Semiconductor ATS2825 / HCW5880 single-core MIPS32 CPU with **no hardware FPU (soft-float only)**, **32 MB total RAM**, a 16 KB L1 data cache, and a **320x240 LCD**.
+The DataFrog SF2000 and GB300 are ultra-budget handhelds powered by an Actions Semiconductor ATS2825 / HCW5880 single-core MIPS32 CPU with **no hardware FPU (soft-float only)**, **32 MB total RAM**, a 16 KB L1 data cache, and a **320x240 LCD**.
 
 Running 3D software rendering on this platform requires extreme optimizations. This fork adapts TyrQuake to run smoothly and stably on SF2000 and GB300 hardware.
 
@@ -65,6 +65,7 @@ This core is built using the MIPS toolchain inside the `gb300_multicore` environ
 3. Use the multicore python packing script to produce `.sf2k` files:
    - `tyrquake_sf2000.sf2k`
    - `tyrquake_gb300.sf2k`
+     ,or rename to core_87000000 if needed
 
 ---
 
@@ -80,7 +81,6 @@ This core is built using the MIPS toolchain inside the `gb300_multicore` environ
    sdcard/
    └── ROMS/
        └── quake/
-           └── id1/
                ├── pak0.pak
                └── pak1.pak   (optional, full version)
    ```
