@@ -1,128 +1,53 @@
-﻿# ====================================================================
-#  TyrQuake Core Options Configuration (SF2000 / GB300 / FrogUI)
-# ====================================================================
-#  Below are all available core options, their active settings,
-#  and comments listing all allowable variants.
-# ====================================================================
-
-# --------------------------------------------------------------------
-# 1. 3D Render Distance / Farclip (r_farclip)
-# Options: "512" | "768" | "1024" | "1536" | "2048" | "unlimited"
-# Description: "512" gives maximum FPS on weak CPUs. "1024" is balanced.
-# --------------------------------------------------------------------
+### [tyrquake_render_distance] :[512] :[512|768|1024|1536|2048|unlimited]
 tyrquake_render_distance = "512"
 
-# --------------------------------------------------------------------
-# 2. Internal Resolution (restart required)
-# Options: "320x200" | "320x240" | "320x480" | "360x200" | "360x240" | "400x240" | "640x480"
-# Description: "320x200" is ~20% faster than "320x240" (fewer pixels to render).
-# --------------------------------------------------------------------
+### [tyrquake_resolution] :[320x200] :[320x200|320x240|320x480|360x200|360x240|400x240|480x272|512x384|640x480]
 tyrquake_resolution = "320x200"
 
-# --------------------------------------------------------------------
-# 3. Target Framerate Limit (restart required)
-# Options: "auto" | "10" | "15" | "20" | "25" | "30" | "40" | "50" | "60" | "72"
-# Description: "30" allows smooth 30 FPS. "20" is legacy SF2000 cap.
-# --------------------------------------------------------------------
+### [tyrquake_framerate] :[30] :[10|15|20|25|30|40|50|60|72|auto]
 tyrquake_framerate = "30"
 
-# --------------------------------------------------------------------
-# 4. First-Person Weapon Model (r_drawviewmodel)
-# Options: "enabled" | "disabled"
-# Description: "disabled" saves 200-400 vertices/frame for more FPS.
-# --------------------------------------------------------------------
+### [tyrquake_drawviewmodel] :[disabled] :[disabled|enabled]
 tyrquake_drawviewmodel = "disabled"
 
-# --------------------------------------------------------------------
-# 5. Fast Flat Sky (r_fastsky)
-# Options: "enabled" | "disabled"
-# Description: "enabled" draws flat sky instead of 2-layer animated clouds.
-# --------------------------------------------------------------------
+### [tyrquake_fastsky] :[enabled] :[disabled|enabled]
 tyrquake_fastsky = "enabled"
 
-# --------------------------------------------------------------------
-# 6. Dynamic Surface Lighting (r_dynamic)
-# Options: "disabled" | "enabled"
-# Description: "disabled" avoids expensive surface relighting on explosions.
-# --------------------------------------------------------------------
+### [tyrquake_dynamic_lighting] :[disabled] :[disabled|enabled]
 tyrquake_dynamic_lighting = "disabled"
 
-# --------------------------------------------------------------------
-# 7. Entity Shadows (r_shadows)
-# Options: "disabled" | "enabled"
-# Description: "disabled" skips drawing polygon shadows under monsters/items.
-# --------------------------------------------------------------------
+### [tyrquake_shadows] :[disabled] :[disabled|enabled]
 tyrquake_shadows = "disabled"
 
-# --------------------------------------------------------------------
-# 8. Water Transparency (r_wateralpha)
-# Options: "1.0" | "0.5" | "0.0"
-# Description: "1.0" (opaque) avoids 2-pass translucent water rendering.
-# --------------------------------------------------------------------
+### [tyrquake_wateralpha] :[1.0] :[1.0|0.5|0.0]
 tyrquake_wateralpha = "1.0"
 
-# --------------------------------------------------------------------
-# 9. Damage Flash Overlay (gl_polyblend)
-# Options: "disabled" | "enabled"
-# Description: "disabled" prevents full-screen red damage flash tint.
-# --------------------------------------------------------------------
+### [tyrquake_polyblend] :[disabled] :[disabled|enabled]
 tyrquake_polyblend = "disabled"
 
-# --------------------------------------------------------------------
-# 10. Underwater / Lava Screen Tint (v_contentblend)
-# Options: "disabled" | "enabled"
-# Description: "disabled" avoids color blending screen pass under liquids.
-# --------------------------------------------------------------------
+### [tyrquake_contentblend] :[disabled] :[disabled|enabled]
 tyrquake_contentblend = "disabled"
 
-# --------------------------------------------------------------------
-# 11. FPS Counter (cl_showfps)
-# Options: "disabled" | "enabled"
-# Description: "enabled" displays current framerate counter on screen.
-# --------------------------------------------------------------------
+### [tyrquake_showfps] :[disabled] :[disabled|enabled]
 tyrquake_showfps = "disabled"
 
-# --------------------------------------------------------------------
-# 12. Audio Output (s_nosound)
-# Options: "disabled" | "enabled"
-# Description: "disabled" keeps sound enabled. "enabled" mutes audio for max speed.
-# --------------------------------------------------------------------
+### [tyrquake_nosound] :[disabled] :[disabled|enabled]
 tyrquake_nosound = "disabled"
 
-# --------------------------------------------------------------------
-# 13. Sound Samplerate Hint
-# Options: "auto" | "32000" | "44100" | "48000" | "96000"
-# Description: "auto" matches frontend sample rate (22.05 kHz on SF2000).
-# --------------------------------------------------------------------
+### [tyrquake_sound_samplerate] :[auto] :[auto|32000|44100|48000|96000]
 tyrquake_sound_samplerate = "auto"
 
-# --------------------------------------------------------------------
-# 14. Analog Stick Deadzone (percent)
-# Options: "0" | "5" | "10" | "15" | "20" | "25" | "30"
-# --------------------------------------------------------------------
+### [tyrquake_analog_deadzone] :[15] :[0|5|10|15|20|25|30]
 tyrquake_analog_deadzone = "15"
 
-# --------------------------------------------------------------------
-# 15. Invert Right Analog Stick Y Axis
-# Options: "disabled" | "enabled"
-# --------------------------------------------------------------------
+### [tyrquake_invert_y_axis] :[disabled] :[disabled|enabled]
 tyrquake_invert_y_axis = "disabled"
 
-# --------------------------------------------------------------------
-# 16. Rumble
-# Options: "disabled" | "enabled"
-# --------------------------------------------------------------------
+### [tyrquake_rumble] :[disabled] :[disabled|enabled]
 tyrquake_rumble = "disabled"
 
-# --------------------------------------------------------------------
-# 17. Renderer Backend
-# Options: "software" | "auto" | "vulkan"
-# Description: SF2000/GB300 requires "software".
-# --------------------------------------------------------------------
+### [tyrquake_renderer] :[software] :[software|auto|vulkan]
 tyrquake_renderer = "software"
 
-# --------------------------------------------------------------------
-# 18. Compute Rendering (HW Vulkan Only)
-# Options: "disabled" | "enabled"
-# --------------------------------------------------------------------
+### [tyrquake_compute_rendering] :[disabled] :[disabled|enabled]
 tyrquake_compute_rendering = "disabled"
