@@ -97,7 +97,7 @@ static bool libretro_supports_bitmasks = false;
 #if defined(HW_DOL)
 #define DEFAULT_MEMSIZE_MB 8
 #elif defined(SF2000)
-#define DEFAULT_MEMSIZE_MB 16
+#define DEFAULT_MEMSIZE_MB 14
 #elif defined(WIIU)
 #define DEFAULT_MEMSIZE_MB 32
 #elif defined(HW_RVL) || defined(_XBOX1) 
@@ -1490,6 +1490,11 @@ bool retro_load_game(const struct retro_game_info *info)
    parms.argv = com_argv;
 
    heap = (unsigned char*)malloc(parms.memsize);
+   while (!heap && parms.memsize > 8 * 1024 * 1024)
+   {
+      parms.memsize -= 1024 * 1024;
+      heap = (unsigned char*)malloc(parms.memsize);
+   }
 
    parms.membase = heap;
 
