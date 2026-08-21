@@ -1716,6 +1716,7 @@ static void COM_InitFilesystem(void)
 
    /* start up with id1 by default */
    COM_AddGameDirectory(com_basedir, "id1");
+   COM_AddGameDirectory(com_basedir, "");
 
    if (COM_CheckParm("-rogue"))
       COM_AddGameDirectory(com_basedir, "rogue");

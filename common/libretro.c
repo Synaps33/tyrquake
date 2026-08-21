@@ -1462,13 +1462,21 @@ bool retro_load_game(const struct retro_game_info *info)
       char tmp_dir[PATH_MAX_LENGTH];
       tmp_dir[0] = '\0';
 
-      parms.argc++;
-      argv[1] = "-game";
-      parms.argc++;
-      argv[2] = basename;
+      if (basename &&
+          strcasecmp(basename, "quake") != 0 &&
+          strcasecmp(basename, "tyrquake") != 0 &&
+          strcasecmp(basename, "id1") != 0 &&
+          strcasecmp(basename, "roms") != 0 &&
+          strcasecmp(basename, "ports") != 0)
+      {
+         parms.argc++;
+         argv[1] = "-game";
+         parms.argc++;
+         argv[2] = basename;
 
-      extract_directory(tmp_dir, g_rom_dir, sizeof(tmp_dir));
-      strlcpy(g_rom_dir, tmp_dir, sizeof(g_rom_dir));
+         extract_directory(tmp_dir, g_rom_dir, sizeof(tmp_dir));
+         strlcpy(g_rom_dir, tmp_dir, sizeof(g_rom_dir));
+      }
    }
 
    free(path_lower);
