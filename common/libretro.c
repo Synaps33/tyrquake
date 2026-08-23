@@ -97,7 +97,7 @@ static bool libretro_supports_bitmasks = false;
 #if defined(HW_DOL)
 #define DEFAULT_MEMSIZE_MB 8
 #elif defined(SF2000)
-#define DEFAULT_MEMSIZE_MB 14
+#define DEFAULT_MEMSIZE_MB 20
 #elif defined(WIIU)
 #define DEFAULT_MEMSIZE_MB 32
 #elif defined(HW_RVL) || defined(_XBOX1) 

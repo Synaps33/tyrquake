@@ -297,7 +297,7 @@ void CL_EstablishConnection(const char *host)
       return;
 
    if (cls.demoplayback)
-      return;
+      CL_StopPlayback();
 
    CL_Disconnect();
 

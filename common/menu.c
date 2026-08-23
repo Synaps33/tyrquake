@@ -471,11 +471,10 @@ M_SinglePlayer_Key(int key)
 	switch (m_singleplayer_cursor) {
 	case 0:
 	    key_dest = key_game;
-	    if (sv.active)
+	    if (sv.active || cls.demoplayback)
 		Cbuf_AddText("disconnect\n");
 	    Cbuf_AddText("maxplayers 1\n");
 	    Cbuf_AddText("map start\n");
-
 	    break;
 
 	case 1:
