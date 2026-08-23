@@ -1708,6 +1708,8 @@ static void COM_InitFilesystem(void)
 
    /* Set save directory */
    strlcpy(com_savedir, host_parms.savedir, sizeof(com_savedir));
+   if (com_savedir[0] == '\0')
+      strlcpy(com_savedir, host_parms.basedir, sizeof(com_savedir));
    
    /* -basedir <path> */
    /* Overrides the system supplied base directory (under id1) */

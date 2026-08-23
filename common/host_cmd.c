@@ -478,7 +478,7 @@ static void Host_SavegameComment(char *text)
     * BSPs are user-installed and may not be trusted. */
    for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++) {
       unsigned char c = (unsigned char)text[i];
-      if (c < 0x20 || c == 0x7f)
+      if (c <= ' ' || c == 0x7f)
          text[i] = '_';
    }
 
@@ -576,8 +576,8 @@ static void Host_Savegame_f(void)
    ED_WriteGlobals(f);
    for (i = 0; i < sv.num_edicts; i++) {
       ED_Write(f, EDICT_NUM(i));
-      rfflush(f);
    }
+   rfflush(f);
    rfclose(f);
    Con_Printf("done.\n");
 }
@@ -710,14 +710,18 @@ void Host_Loadgame_f(void)
             break;
          }
       }
-      if (i == 32768 - 1)
-         Sys_Error("Loadgame buffer overflow");
+      if (i == 32768 - 1) {
+         Con_Printf("Loadgame buffer overflow\n");
+         break;
+      }
       str[i] = 0;
       start = COM_Parse(str);
       if (!com_token[0])
          break;		/* end of file */
-      if (strcmp(com_token, "{"))
-         Sys_Error("First token isn't a brace");
+      if (strcmp(com_token, "{")) {
+         Con_Printf("First token isn't a brace\n");
+         break;
+      }
 
       if (entnum == -1) {	/* parse the global vars */
          ED_ParseGlobals(start);
