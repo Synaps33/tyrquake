@@ -1,4 +1,3 @@
-libc initialized
 config_load: /mnt/sda1/cores/config/multicore.opt not found
 config_load: /mnt/sda1/configs/multicore.opt loaded
 config_load: /mnt/sda1/bios/multicore.opt not found
