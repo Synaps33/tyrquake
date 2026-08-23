@@ -443,16 +443,10 @@ Mod_ClearAll
 void
 Mod_ClearAll(void)
 {
-    int i, j;
+    int i;
     model_t *mod;
 
-    j = 0;
-    for (i = 0; i < mod_numknown; i++) {
-	if (mod_known[i].name[0] == '*')
-	    continue;
-	if (j != i)
-	    mod_known[j] = mod_known[i];
-	mod = &mod_known[j];
+    for (i = 0, mod = mod_known; i < mod_numknown; i++, mod++) {
 	if (mod->type != mod_alias)
 	    mod->needload = true;
 	/*
@@ -461,9 +455,7 @@ Mod_ClearAll(void)
 	 */
 	if (mod->type == mod_sprite)
 	    mod->cache.data = NULL;
-	j++;
     }
-    mod_numknown = j;
 
     fatpvs = NULL;
     memset(pvscache, 0, sizeof(pvscache));

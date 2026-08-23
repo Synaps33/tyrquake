@@ -299,6 +299,8 @@ void CL_EstablishConnection(const char *host)
    if (cls.demoplayback)
       CL_StopPlayback();
 
+   CL_Disconnect();
+
    cls.netcon = NET_Connect(host);
    if (!cls.netcon)
       Host_Error("CL_Connect: connect failed");

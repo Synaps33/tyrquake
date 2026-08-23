@@ -288,7 +288,7 @@ void * Z_Malloc(int size)
 {
    void *buf = Z_TagMalloc(size, 1);
    if (!buf)
-      Sys_Error("%s: failed on allocation of %i bytes", __func__, size);
+      Host_Error("%s: failed on allocation of %i bytes", __func__, size);
    memset(buf, 0, size);
 
    return buf;
@@ -448,7 +448,7 @@ void *Hunk_Alloc(int size)
 
    if (hunk_size - hunk_low_used - hunk_high_used < size)
    {
-      Sys_Error ("%s: failed on %i bytes", __func__, size);
+      Host_Error ("%s: failed on %i bytes", __func__, size);
    }
 
    h = (hunk_t *)(hunk_base + hunk_low_used);
@@ -526,8 +526,7 @@ void *Hunk_HighAlloc(int size)
 
    if (hunk_size - hunk_low_used - hunk_high_used < size)
    {
-      Con_Printf("Hunk_HighAlloc: failed on %i bytes\n", size);
-      return NULL;
+      Host_Error ("%s: failed on %i bytes", __func__, size);
    }
 
    hunk_high_used += size;
@@ -620,8 +619,7 @@ void *Hunk_TempAllocExtend(int size)
 
    size = (size + 15) & ~15;
    if (hunk_size - hunk_low_used - hunk_high_used < size) {
-      Con_Printf("%s: failed on %i bytes\n", __func__, size);
-      return NULL;
+      Host_Error("%s: failed on %i bytes", __func__, size);
    }
 
    hunk_high_used += size;
@@ -1059,7 +1057,7 @@ void *Cache_AllocPadded(cache_user_t *c, int pad, int size)
       }
       /* free the least recently used cache data */
       if (cache_head.lru_prev == &cache_head)
-         Sys_Error("%s: out of memory", __func__);
+         Host_Error("%s: out of memory", __func__);
       /* not enough memory at all */
       Cache_Free(cache_head.lru_prev->user);
    }

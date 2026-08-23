@@ -1452,6 +1452,7 @@ Always appends a 0 byte to the loaded data.
 static cache_user_t *loadcache;
 static byte *loadbuf;
 static int loadsize;
+static int64_t bytes_read;
 
 static void *COM_LoadFile(const char *path, int usehunk, unsigned long *length)
 {
@@ -1494,14 +1495,17 @@ static void *COM_LoadFile(const char *path, int usehunk, unsigned long *length)
       Sys_Error("%s: bad usehunk", __func__);
 
    if (!buf)
-      Sys_Error("%s: not enough space for %s", __func__, path);
+      Host_Error("%s: not enough space for %s", __func__, path);
 
    buf[len] = 0;
 
    Draw_BeginDisc();
-   rfread(buf, 1, len, f);
+   bytes_read = rfread(buf, 1, len, f);
    rfclose(f);
    Draw_EndDisc();
+
+   if (bytes_read != len)
+      Host_Error("%s: short read (%lld of %d bytes) from %s", __func__, (long long)bytes_read, len, path);
 
    return buf;
 }

@@ -105,10 +105,26 @@ int64_t rfseek(RFILE* stream, int64_t offset, int origin)
 int64_t rfread(void* buffer,
    size_t elem_size, size_t elem_count, RFILE* stream)
 {
+   size_t bytes_to_read;
+   size_t bytes_read = 0;
+   int64_t ret;
+   char *ptr = (char *)buffer;
+
    if (!stream || (elem_size == 0) || (elem_count == 0))
       return 0;
 
-   return (filestream_read(stream, buffer, elem_size * elem_count) / elem_size);
+   bytes_to_read = elem_size * elem_count;
+   while (bytes_to_read > 0)
+   {
+      ret = filestream_read(stream, ptr, bytes_to_read);
+      if (ret <= 0)
+         break;
+      ptr += ret;
+      bytes_read += ret;
+      bytes_to_read -= ret;
+   }
+
+   return (bytes_read / elem_size);
 }
 
 char *rfgets(char *s, int maxCount, RFILE* stream)
@@ -129,10 +145,26 @@ int rfgetc(RFILE* stream)
 int64_t rfwrite(void const* buffer,
    size_t elem_size, size_t elem_count, RFILE* stream)
 {
+   size_t bytes_to_write;
+   size_t bytes_written = 0;
+   int64_t ret;
+   const char *ptr = (const char *)buffer;
+
    if (!stream || (elem_size == 0) || (elem_count == 0))
       return 0;
 
-   return (filestream_write(stream, buffer, elem_size * elem_count) / elem_size);
+   bytes_to_write = elem_size * elem_count;
+   while (bytes_to_write > 0)
+   {
+      ret = filestream_write(stream, ptr, bytes_to_write);
+      if (ret <= 0)
+         break;
+      ptr += ret;
+      bytes_written += ret;
+      bytes_to_write -= ret;
+   }
+
+   return (bytes_written / elem_size);
 }
 
 int rfputc(int character, RFILE * stream)
