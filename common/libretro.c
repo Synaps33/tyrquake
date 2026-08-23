@@ -1353,40 +1353,9 @@ bool retro_load_game(const struct retro_game_info *info)
 
    extract_directory(g_rom_dir, info->path, sizeof(g_rom_dir));
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &base_save_dir) && base_save_dir)
-   {
- 		if (!string_is_empty(base_save_dir))
- 		{
- 			/* Ensure parent save directory exists first */
- 			if (!path_is_directory(base_save_dir))
- 				path_mkdir(base_save_dir);
-
- 			/* Get game 'name' (i.e. subdirectory) */
- 			const char *game_name = path_basename(g_rom_dir);
-
- 			/* > Build final save path */
- 			fill_pathname_join(g_save_dir, base_save_dir, game_name, sizeof(g_save_dir));
- 			use_external_savedir = true;
- 			
- 			/* > Create save directory, if required */
- 			if (!path_is_directory(g_save_dir))
- 			{
- 				use_external_savedir = path_mkdir(g_save_dir);
- 			}
- 		}
-   }
-   /* > Error check */
-   if (!use_external_savedir)
-   {
-		/* > Use ROM directory fallback... */
-		strlcpy(g_save_dir, g_rom_dir, sizeof(g_save_dir));
-	}
-	else
-	{
-		/* > Final check: is the save directory the same as the 'rom' directory? */
-		/*   (i.e. ensure logical behaviour if user has set a bizarre save path...) */
-		use_external_savedir = (strcmp(g_save_dir, g_rom_dir) != 0);
-	}
+   /* Use ROM directory directly for saves on SF2000/GB300 */
+   strlcpy(g_save_dir, g_rom_dir, sizeof(g_save_dir));
+   use_external_savedir = false;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE, &rumble))
       log_cb(RETRO_LOG_INFO, "Rumble environment supported.\n");
