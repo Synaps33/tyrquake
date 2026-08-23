@@ -338,12 +338,8 @@ CL_ParseServerInfo(void)
     const char *mapname;
     int i, maxlen;
     int nummodels, numsounds;
-    char **model_precache = malloc(sizeof(char*) * MAX_MODELS);
-    char **sound_precache = malloc(sizeof(char*) * MAX_SOUNDS);
-    for (i = 0; i < MAX_MODELS; i++)
-       model_precache[i] = malloc(sizeof(char) * MAX_QPATH);
-    for (i = 0; i < MAX_SOUNDS; i++)
-       sound_precache[i] = malloc(sizeof(char) * MAX_QPATH);
+    static char model_precache[MAX_MODELS][MAX_QPATH];
+    static char sound_precache[MAX_SOUNDS][MAX_QPATH];
 
     Con_DPrintf("Serverinfo packet received.\n");
 
@@ -395,19 +391,6 @@ CL_ParseServerInfo(void)
           break;
        if (nummodels == max_models(cl.protocol))
        {
-          /* Host_Error longjmps out of this function and the
-           * locals go away with the stack frame, so the cleanup
-           * at done: never runs.  Free the per-call buffers
-           * here before we hand off.  Returning afterwards is
-           * defensive -- Host_Error doesn't return in practice
-           * but if that ever changes we still want to fall
-           * through the cleanup. */
-          for (i = 0; i < MAX_MODELS; i++)
-             free(model_precache[i]);
-          free(model_precache);
-          for (i = 0; i < MAX_SOUNDS; i++)
-             free(sound_precache[i]);
-          free(sound_precache);
           Host_Error("Server sent too many model precaches (max = %d)",
                 max_models(cl.protocol));
           return;
@@ -425,14 +408,6 @@ CL_ParseServerInfo(void)
           break;
        if (numsounds == max_sounds(cl.protocol))
        {
-          /* Same longjmp/stack-frame issue as the model-precache
-           * Host_Error above: clean up before handing off. */
-          for (i = 0; i < MAX_MODELS; i++)
-             free(model_precache[i]);
-          free(model_precache);
-          for (i = 0; i < MAX_SOUNDS; i++)
-             free(sound_precache[i]);
-          free(sound_precache);
           Host_Error("Server sent too many sound precaches (max = %d)",
                 max_sounds(cl.protocol));
           return;
@@ -481,12 +456,7 @@ CL_ParseServerInfo(void)
     noclip_anglehack = false;
 
 done:
-    for (i = 0; i < MAX_MODELS; i++)
-       free(model_precache[i]);
-    free(model_precache);
-    for (i = 0; i < MAX_SOUNDS; i++)
-       free(sound_precache[i]);
-    free(sound_precache);
+    ;
 }
 
 
